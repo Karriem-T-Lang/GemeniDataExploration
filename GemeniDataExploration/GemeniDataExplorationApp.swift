@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct GemeniDataExplorationApp: App {
@@ -13,5 +14,6 @@ struct GemeniDataExplorationApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: GameLog.self)
     }
 }
