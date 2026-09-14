@@ -16,6 +16,7 @@ struct ContentView: View {
     
     @State private var currentDateIndex: Int = 0
     @State private var uniqueDates: [String] = []
+    @State private var showingBetHistory = false
     
     // Fetch active user bankroll or default safely
     private var currentUsername: String {
@@ -39,7 +40,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 12) {
-                // Top Header: User Profile & Bankroll
+                // Top Header: User Profile, Bankroll & History Action Button
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 6) {
@@ -60,6 +61,21 @@ struct ContentView: View {
                     }
                     
                     Spacer()
+                    
+                    // History & Nuke Action Button
+                    Button {
+                        showingBetHistory = true
+                    } label: {
+                        Image(systemName: "list.bullet.rectangle.portrait")
+                            .font(.title2)
+                            .foregroundStyle(.blue)
+                            .padding(8)
+                            .background(Color(.systemBackground))
+                            .clipShape(Circle())
+                    }
+                    
+                    Spacer()
+                        .frame(width: 12)
                     
                     VStack(alignment: .trailing, spacing: 4) {
                         Text("Current Date")
@@ -116,6 +132,9 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("NBA Simulator")
+            .sheet(isPresented: $showingBetHistory) {
+                BetHistoryView()
+            }
             .onAppear {
                 CSVLoader.seedDatabaseIfNeeded(context: modelContext)
                 UserManager.ensureUserProfileExists(in: modelContext)
