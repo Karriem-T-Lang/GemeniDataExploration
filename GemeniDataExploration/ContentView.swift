@@ -13,10 +13,15 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     
     @Query(sort: \GameLog.date) private var games: [GameLog]
+    @Query private var userProfiles: [UserProfile]
     
-    @State private var bankroll: Double = 1000.00
     @State private var currentDateIndex: Int = 0
     @State private var uniqueDates: [String] = []
+    
+    // Fetch active user bankroll or default safely
+    private var currentBankroll: Double {
+        userProfiles.first?.bankroll ?? 1000.00
+    }
     
     var currentDate: String {
         guard !uniqueDates.isEmpty, currentDateIndex < uniqueDates.count else { return "" }
@@ -37,7 +42,7 @@ struct ContentView: View {
                         Text("Bankroll")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text("$\(bankroll, specifier: "%.2f")")
+                        Text("$\(currentBankroll, specifier: "%.2f")")
                             .font(.title2)
                             .bold()
                             .foregroundStyle(.green)
@@ -88,7 +93,7 @@ struct ContentView: View {
                 }
                 .padding(.horizontal)
 
-                // Vertical ScrollView to scroll through all game cards for the date
+                // Vertical ScrollView
                 ScrollView(.vertical, showsIndicators: true) {
                     LazyVStack(spacing: 16) {
                         ForEach(gamesForCurrentDate) { game in
@@ -102,6 +107,8 @@ struct ContentView: View {
             .navigationTitle("NBA Simulator")
             .onAppear {
                 CSVLoader.seedDatabaseIfNeeded(context: modelContext)
+                ensureUserProfileExists()
+                
                 if uniqueDates.isEmpty {
                     uniqueDates = Array(Set(games.map { $0.date })).sorted()
                 }
@@ -109,6 +116,14 @@ struct ContentView: View {
             .onChange(of: games.count) { _, _ in
                 uniqueDates = Array(Set(games.map { $0.date })).sorted()
             }
+        }
+    }
+    
+    // Seed initial user profile ($1,000.00) if none exists
+    private func ensureUserProfileExists() {
+        if userProfiles.isEmpty {
+            let initialProfile = UserProfile(startingBankroll: 1000.00)
+            modelContext.insert(initialProfile)
         }
     }
 }
@@ -175,7 +190,6 @@ struct GameCardView: View {
         .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 2)
     }
     
-    // Helper to shorten long team names inside small 3-column boxes
     private func shortName(_ fullTeam: String) -> String {
         let parts = fullTeam.components(separatedBy: " ")
         return parts.last ?? fullTeam
@@ -209,7 +223,7 @@ struct OddsBox<Content: View>: View {
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: GameLog.self, configurations: config)
+    let container = try! ModelContainer(for: GameLog.self, UserProfile.self, configurations: config)
     
     return ContentView()
         .modelContainer(container)
