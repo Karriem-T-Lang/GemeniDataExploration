@@ -112,7 +112,13 @@ struct ContentView: View {
                     
                     Spacer()
                     
-                    Button(action: { if currentDateIndex < uniqueDates.count - 1 { currentDateIndex += 1 } }) {
+                    Button(action: {
+                        if currentDateIndex < uniqueDates.count - 1 {
+                            // Grade pending bets for current date before stepping forward
+                            BetSettlementService.evaluateBets(for: currentDate, context: modelContext)
+                            currentDateIndex += 1
+                        }
+                    }) {
                         Image(systemName: "chevron.right.circle.fill")
                             .font(.title2)
                     }
