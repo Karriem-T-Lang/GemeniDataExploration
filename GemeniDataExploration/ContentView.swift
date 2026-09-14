@@ -18,6 +18,10 @@ struct ContentView: View {
     @State private var uniqueDates: [String] = []
     
     // Fetch active user bankroll or default safely
+    private var currentUsername: String {
+        userProfiles.first?.username ?? "JoeMoneyBagz$"
+    }
+    
     private var currentBankroll: Double {
         userProfiles.first?.bankroll ?? 1000.00
     }
@@ -35,12 +39,20 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 12) {
-                // Top Header: Bankroll & Date
+                // Top Header: User Profile & Bankroll
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Bankroll")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            Text(currentUsername)
+                                .font(.headline)
+                                .bold()
+                                .foregroundStyle(.primary)
+                            
+                            Image(systemName: "person.crop.circle.fill")
+                                .font(.subheadline)
+                                .foregroundStyle(.blue)
+                        }
+                        
                         Text("$\(currentBankroll, specifier: "%.2f")")
                             .font(.title2)
                             .bold()

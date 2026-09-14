@@ -10,10 +10,12 @@ import SwiftData
 @Model
 final class UserProfile {
     var id: UUID
+    var username: String
     var bankroll: Double
     
-    init(startingBankroll: Double = 1000.00) {
+    init(username: String = "JoeMoneyBagz$", startingBankroll: Double = 1000.00) {
         self.id = UUID()
+        self.username = username
         self.bankroll = startingBankroll
     }
 }

@@ -16,7 +16,7 @@ final class UserManager {
         do {
             let existingProfiles = try context.fetch(descriptor)
             if existingProfiles.isEmpty {
-                let defaultProfile = UserProfile(startingBankroll: 1000.00)
+                let defaultProfile = UserProfile(username: "JoeMoneyBagz$", startingBankroll: 1000.00)
                 context.insert(defaultProfile)
                 try context.save()
             }
