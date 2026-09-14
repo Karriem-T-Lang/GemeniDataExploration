@@ -4,7 +4,6 @@
 //
 //  Created by Karriem Lang on 9/13/26.
 //
-
 import Foundation
 import SwiftUI
 import SwiftData
@@ -107,7 +106,7 @@ struct ContentView: View {
             .navigationTitle("NBA Simulator")
             .onAppear {
                 CSVLoader.seedDatabaseIfNeeded(context: modelContext)
-                ensureUserProfileExists()
+                UserManager.ensureUserProfileExists(in: modelContext)
                 loadDates()
             }
             .onChange(of: games) { _, _ in
@@ -119,14 +118,6 @@ struct ContentView: View {
     private func loadDates() {
         if uniqueDates.isEmpty && !games.isEmpty {
             uniqueDates = Array(Set(games.map { $0.date })).sorted()
-        }
-    }
-    
-    // Seed initial user profile ($1,000.00) if none exists
-    private func ensureUserProfileExists() {
-        if userProfiles.isEmpty {
-            let initialProfile = UserProfile(startingBankroll: 1000.00)
-            modelContext.insert(initialProfile)
         }
     }
 }
