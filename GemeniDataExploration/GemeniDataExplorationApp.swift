@@ -14,6 +14,6 @@ struct GemeniDataExplorationApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: GameLog.self)
+        .modelContainer(for: [GameLog.self, Bet.self, UserProfile.self])
     }
 }
